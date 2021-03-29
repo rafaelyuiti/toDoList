@@ -7,16 +7,10 @@
 
 import UIKit
 
-class ViewController: UIViewController, UITableViewDataSource{
+class ViewController: UIViewController, UITableViewDataSource, UITableViewDelegate, ChangeButton{
     
     @IBOutlet weak var tableView: UITableView!
     var tasks: [Task] = []
-    
-    //var task1 = Task(name: "task1")
-    //var task2 = Task(name: "task2")
-    
-    
-    var items = [String]()
     
     func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
         return tasks.count
@@ -25,20 +19,33 @@ class ViewController: UIViewController, UITableViewDataSource{
     func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
         let cell = tableView.dequeueReusableCell(withIdentifier: "taskCell", for: indexPath) as! TaskCell
         
-        cell.taskNameLabel?.text = tasks[indexPath.row].name
+        cell.taskNameLabel.text = tasks[indexPath.row].name
+        
+        if tasks[indexPath.row].checked{
+            cell.checkBoxOutlet.setBackgroundImage(#imageLiteral(resourceName: "checkBoxFILLED "), for: UIControl.State.normal)
+        }else{
+            cell.checkBoxOutlet.setBackgroundImage(#imageLiteral(resourceName: "checkBoxOUTLINE "), for: UIControl.State.normal)
+        }
+        
+        cell.delegate = self
+        cell.indexP = indexPath.row
+        cell.tasks = tasks
+        
         return cell
+    }
+    
+    func changeButton(checked: Bool, index: Int) {
+        tasks[index].checked = checked
+        tableView.reloadData()
     }
     
     
     override func viewDidLoad() {
         super.viewDidLoad()
         title = "To Do List"
-        tasks.append(Task(name: "teste"))
-        view.addSubview(tableView)
+        tableView.dataSource = self
         
         navigationItem.rightBarButtonItem = UIBarButtonItem(barButtonSystemItem: .add, target: self, action: #selector(didTapAdd))
-        tableView.reloadData()
-        print(tasks)
         
     }
     
